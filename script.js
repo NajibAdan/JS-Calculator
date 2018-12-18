@@ -1,23 +1,30 @@
 const format = (calculations) => {
-    var number = '';
-    var operator = '';
-    for(x in calculations){
-        if(parseInt(calculations[x]!=NaN)){
-            number += calculations[x];
+    arrayOperands = [];
+    operations = ''
+    for (x in calculations){
+        if((calculations[x]=='+')||(calculations[x]=='-')){
+            arrayOperands.push(parse(operations))
+            operations = calculations[x];
         }
-        else {
-            operator = calculations[x];
-            number += ' ';
+        else{
+            operations += calculations[x];
         }
     }
-    var space = number.indexOf(' ');
-    return operate(operator,parseInt(number.slice(0,space-1)),parseInt(number.slice(space)))
+    arrayOperands.push(parse(operations))
+    return bodmasCheck(arrayOperands);
+
+}
+const parse = (operations) => {
+    if (!((operations.includes('*'))||(operations.includes('/')))){
+        return parseInt(operations);
+    }
+    return operations
 }
 const add = (a,b) => {
     return a+b;
 }
 const subtract = (a,b) => {
-    return a-b;
+    return add(-b,a);
 }
 const multiply = (a,b) => {
     return a*b;
@@ -45,6 +52,18 @@ const operate = (operator,operandA,operandB) => {
     }
 }
 
+const bodmasCheck = (arrayOperands) => {
+    var sum = 0;
+    console.log(arrayOperands)
+    for (x in arrayOperands){
+        if (Number.isInteger(arrayOperands[x])){
+            console.log('check')
+            sum = operate('+',sum,arrayOperands[x]);
+        }
+    }
+    return sum;
+}
+
 let buttonPressed = Array.from(document.querySelectorAll("button"));
 let display = document.querySelector("#display");
 let displayText ='';
@@ -61,7 +80,8 @@ buttonPressed.forEach((number) => {
             display.setAttribute('value',displayText);
         }
         else if (number.getAttribute('id')=='equals'){
-            let answer = format(displayText);
+            console.log(displayText);
+            let answer = format(display.getAttribute('value'));
             displayText = '';
             display.setAttribute('value',answer);
         }
